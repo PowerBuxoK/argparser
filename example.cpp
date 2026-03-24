@@ -16,5 +16,7 @@ int main(int argc, char* argv[])
   ap.parse();
 
   std::cout << arg0->val() << std::endl;
+  std::cout << arg1->val() << std::endl;
+  std::cout << arg2->val() << std::endl;
   return 0;
 }

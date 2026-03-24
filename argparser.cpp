@@ -1,14 +1,10 @@
-#include <concepts>
 #include <cstdlib>
 #include <exception>
 #include <iostream>
 #include <memory>
-#include <optional>
 #include <ostream>
-#include <random>
 #include <string>
 #include <unordered_map>
-#include <variant>
 #include <vector>
 
 namespace arp
@@ -29,10 +25,11 @@ namespace arp
   {
   public:
     ArgparserArgument(const std::string& name, const std::string& description, const requirement required, const positionality positional)
-        : m_name(name), m_positional(positional), m_description(description) {}
+        : m_name(name), m_positional(positional), m_description(description), m_required(required) {}
     virtual ~ArgparserArgument() {}
     ArgparserArgument(const ArgparserArgument&) = delete;
     bool defined() { return m_defined; };
+    bool required() { return m_required; };
     std::string& getName() { return m_name; };
     std::string& getDescription() { return m_description; };
     virtual int read(std::vector<std::string> args, int start)
@@ -47,7 +44,7 @@ namespace arp
 
   protected:
     std::string m_name, m_description;
-    bool m_defined = false;
+    bool m_defined = false, m_required = false;
     positionality m_positional;
   };
 
@@ -163,7 +160,8 @@ namespace arp
 
     void printHelp()
     {
-      std::cout << m_args[0] << "\n"
+      std::cout << "Program help:\n"
+                << m_args[0] << "\n"
                 << m_desc << "\nUsage:\n";
       if(m_conf_pos.size() > 0)
       {
@@ -173,10 +171,7 @@ namespace arp
       {
         std::cout << "\t" << v->getName() << ": " << v->getDescription() << "\n";
       }
-      if(m_conf.size() - m_conf_pos.size() > 0)
-      {
-        std::cout << "Non-positional arguments:\n";
-      }
+      std::cout << "Non-positional arguments:\n";
       for(auto& vp : m_conf)
       {
         auto& v = vp.second;
@@ -184,6 +179,7 @@ namespace arp
           continue;
         std::cout << "\t" << v->getName() << ": " << v->getDescription() << "\n";
       }
+      std::cout << "\t--help: show this message" << std::endl;
     }
 
     void parse()
@@ -223,6 +219,18 @@ namespace arp
         else
         {
           i++;
+        }
+      }
+
+      // Validate that requirements are met
+      for(auto& vp : m_conf)
+      {
+        auto& v = vp.second;
+        if(v->required() && !v->defined())
+        {
+          std::cout << "Required argument " << v->getName() << " not defined!" << std::endl;
+          printHelp();
+          exit(-1);
         }
       }
 
