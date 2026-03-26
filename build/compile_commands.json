@@ -1,8 +1,0 @@
-[
-{
-  "directory": "/home/PwrBxK/dev/argparser/build",
-  "command": "/usr/bin/c++   -std=gnu++20 -o CMakeFiles/argparser-example.dir/example.cpp.o -c /home/PwrBxK/dev/argparser/example.cpp",
-  "file": "/home/PwrBxK/dev/argparser/example.cpp",
-  "output": "CMakeFiles/argparser-example.dir/example.cpp.o"
-}
-]
