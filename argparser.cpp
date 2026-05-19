@@ -153,7 +153,7 @@ namespace arp
       return std::move(v);
     }
 
-    void setDesription(const std::string& desc)
+    void setDescription(const std::string& desc)
     {
       m_desc = desc;
     }
