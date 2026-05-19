@@ -4,7 +4,7 @@ int main(int argc, char* argv[])
 {
   arp::Argparser ap(argc, argv); // Initialize the main object
                                  // Set the program description
-  ap.setDesription("Test program buru :3");
+  ap.setDescription("Test program buru :3");
   // Add a required positional argument named argname0
   auto arg0 = ap.add<arp::sint>("argname0", "Argument 0", arp::required, arp::pos);
   // Add a required positional argument named argname1
