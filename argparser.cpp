@@ -221,7 +221,8 @@ namespace arp
       {
         if(!printed_args.insert(v).second)
           continue;
-        std::cout << "\t[" << v->getShortName() << " " << v->getName() << " ]: " << v->getDescription() << "\n";
+        std::string shortname = (v->have_short() ? (" " + v->getShortName()) : "");
+        std::cout << "\t[" << shortname << " " << v->getName() << " ]: " << v->getDescription() << "\n";
       }
       std::cout << "Non-positional arguments:\n";
       for(auto& vp : m_conf)
@@ -231,7 +232,8 @@ namespace arp
           continue;
         if(!printed_args.insert(v).second)
           continue;
-        std::cout << "\t[" << v->getShortName() << " " << v->getName() << " ]: " << v->getDescription() << "\n";
+        std::string shortname = (v->have_short() ? (" " + v->getShortName()) : "");
+        std::cout << "\t[" << shortname << " " << v->getName() << " ]: " << v->getDescription() << "\n";
       }
       std::cout << "\t--help: show this message" << std::endl;
     }
