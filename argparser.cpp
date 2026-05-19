@@ -5,6 +5,7 @@
 #include <ostream>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 namespace arp
@@ -24,13 +25,22 @@ namespace arp
   class ArgparserArgument
   {
   public:
-    ArgparserArgument(const std::string& name, const std::string& description, const requirement required, const positionality positional)
-        : m_name(name), m_positional(positional), m_description(description), m_required(required) {}
+    ArgparserArgument(const std::string& name, const std::string& description, const requirement required, const positionality positional, const std::string& short_name = "")
+        : m_name(name), m_positional(positional), m_description(description), m_required(required), s_name(short_name)
+    {
+      s_defined = short_name.length() != 0;
+      if(s_defined && positional)
+      {
+        std::cerr << "Warning: Assigning short name to [" << name << "] pretty much useless since it is a positional argument." << std::endl;
+      }
+    }
     virtual ~ArgparserArgument() {}
     ArgparserArgument(const ArgparserArgument&) = delete;
     bool defined() { return m_defined; };
     bool required() { return m_required; };
+    bool have_short() { return s_defined; };
     std::string& getName() { return m_name; };
+    std::string& getShortName() { return s_name; };
     std::string& getDescription() { return m_description; };
     virtual int read(std::vector<std::string> args, int start)
     {
@@ -43,8 +53,8 @@ namespace arp
     virtual std::string tostring() { return "Base class, no value"; };
 
   protected:
-    std::string m_name, m_description;
-    bool m_defined = false, m_required = false;
+    std::string m_name, s_name, m_description;
+    bool m_defined = false, m_required = false, s_defined = false;
     positionality m_positional;
   };
 
@@ -173,11 +183,16 @@ namespace arp
       }
     }
     template <typename T>
-    std::shared_ptr<T> add(const std::string& name, const std::string& description, const requirement required, const positionality positional)
+    std::shared_ptr<T> add(const std::string& name, const std::string& description, const requirement required, const positionality positional, const std::string& short_name = "")
     {
-      std::shared_ptr<T> v = std::make_shared<T>(name, description, required, positional);
+      std::shared_ptr<T> v = std::make_shared<T>(name, description, required, positional, short_name);
 
-      m_conf.insert_or_assign((*v.get()).getName(), v);
+      auto& param = (*v.get());
+      m_conf.insert_or_assign(param.getName(), v);
+      if(param.have_short())
+      {
+        m_conf.insert_or_assign(param.getShortName(), v);
+      }
 
       if(positional)
       {
@@ -194,6 +209,7 @@ namespace arp
 
     void printHelp()
     {
+      std::unordered_set<std::shared_ptr<ArgparserArgument>> printed_args = {}; // This will prevent printing same argument 2 times due to short names
       std::cout << "Program help:\n"
                 << m_args[0] << "\n"
                 << m_desc << "\nUsage:\n";
@@ -203,7 +219,9 @@ namespace arp
       }
       for(auto& v : m_conf_pos)
       {
-        std::cout << "\t" << v->getName() << ": " << v->getDescription() << "\n";
+        if(!printed_args.insert(v).second)
+          continue;
+        std::cout << "\t[" << v->getShortName() << " " << v->getName() << " ]: " << v->getDescription() << "\n";
       }
       std::cout << "Non-positional arguments:\n";
       for(auto& vp : m_conf)
@@ -211,7 +229,9 @@ namespace arp
         auto& v = vp.second;
         if(v->positional())
           continue;
-        std::cout << "\t" << v->getName() << ": " << v->getDescription() << "\n";
+        if(!printed_args.insert(v).second)
+          continue;
+        std::cout << "\t[" << v->getShortName() << " " << v->getName() << " ]: " << v->getDescription() << "\n";
       }
       std::cout << "\t--help: show this message" << std::endl;
     }
