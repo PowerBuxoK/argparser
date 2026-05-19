@@ -62,7 +62,7 @@ namespace arp
       {
         m_data = std::stoll(args[start]);
       }
-      catch(std::exception ex)
+      catch(const std::exception& ex) // Without this ex.what() will return std::exception instead of real cause
       {
         std::cerr << "Cant convert argument " << start << " [" << args[start] << "] to number" << std::endl;
         exit(-1);
@@ -80,6 +80,40 @@ namespace arp
 
   private:
     long long m_data;
+  };
+
+  class uint : public ArgparserArgument
+  {
+  public:
+    using ArgparserArgument::ArgparserArgument;
+
+    int read(std::vector<std::string> args, int start) override
+    {
+      if(start >= args.size())
+        return 0;
+      m_defined = true;
+      try
+      {
+        m_data = std::stoull(args[start]);
+      }
+      catch(const std::exception& ex)
+      {
+        std::cerr << "Cant convert argument " << start << " [" << args[start] << "] to number" << std::endl;
+        exit(-1);
+      }
+      return 1; // Read 1 argument
+    };
+
+    unsigned long long val() { return m_data; };
+    virtual std::string tostring() override
+    {
+      return std::to_string(m_data);
+    };
+
+    const char* type() const override { return "unsigned int"; }
+
+  private:
+    unsigned long long m_data;
   };
 
   class str : public ArgparserArgument
