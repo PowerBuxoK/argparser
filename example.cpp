@@ -10,9 +10,9 @@ int main(int argc, char* argv[])
   // Add a required positional argument named argname1
   auto arg1 = ap.add<arp::str>("argname1", "Argument 1", arp::required, arp::pos);
   // Add a required non-positional argument named argname2
-  auto arg2 = ap.add<arp::def>("--argname2", "Argument 2", arp::required, arp::nopos);
+  auto arg2 = ap.add<arp::def>("--argname2", "Argument 2", arp::required, arp::nopos, "-an2");
   // Add a non-required non-positional argument named argname3
-  auto arg3 = ap.add<arp::uint>("--argname3", "Argument 3", arp::norequired, arp::nopos);
+  auto arg3 = ap.add<arp::uint>("--argname3", "Argument 3", arp::norequired, arp::nopos, "-an3");
   ap.parse();
 
   std::cout << arg0->val() << std::endl;
@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
   // These two lines are the same because type is arp::def
   std::cout << arg2->val() << std::endl;
   std::cout << arg2->defined() << std::endl;
-  // arg3 will differ from arg1 because arg3 is unsigned 
+  // arg3 will differ from arg1 because arg3 is unsigned
   std::cout << arg3->val() << std::endl;
 
   return 0;
