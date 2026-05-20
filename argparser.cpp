@@ -26,10 +26,10 @@ namespace arp
   {
   public:
     ArgparserArgument(const std::string& name, const std::string& description, const requirement required, const positionality positional, const std::string& short_name = "")
-        : m_name(name), m_positional(positional), m_description(description), m_required(required), s_name(short_name)
+        : m_name(name), m_positional(positional), m_description(description), m_required(required), m_short_name(short_name)
     {
-      s_defined = short_name.length() != 0;
-      if(s_defined && positional)
+      m_short_name_defined = short_name.length() != 0;
+      if(m_short_name_defined && positional)
       {
         std::cerr << "Warning: Assigning short name to [" << name << "] pretty much useless since it is a positional argument." << std::endl;
       }
@@ -38,9 +38,9 @@ namespace arp
     ArgparserArgument(const ArgparserArgument&) = delete;
     bool defined() { return m_defined; };
     bool required() { return m_required; };
-    bool have_short() { return s_defined; };
+    bool has_short() { return m_short_name_defined; };
     std::string& getName() { return m_name; };
-    std::string& getShortName() { return s_name; };
+    std::string& getShortName() { return m_short_name; };
     std::string& getDescription() { return m_description; };
     virtual int read(std::vector<std::string> args, int start)
     {
@@ -53,8 +53,8 @@ namespace arp
     virtual std::string tostring() { return "Base class, no value"; };
 
   protected:
-    std::string m_name, s_name, m_description;
-    bool m_defined = false, m_required = false, s_defined = false;
+    std::string m_name, m_short_name, m_description;
+    bool m_defined = false, m_required = false, m_short_name_defined = false;
     positionality m_positional;
   };
 
@@ -189,7 +189,7 @@ namespace arp
 
       auto& param = (*v.get());
       m_conf.insert_or_assign(param.getName(), v);
-      if(param.have_short())
+      if(param.has_short())
       {
         m_conf.insert_or_assign(param.getShortName(), v);
       }
@@ -221,7 +221,7 @@ namespace arp
       {
         if(!printed_args.insert(v).second)
           continue;
-        std::string shortname = (v->have_short() ? (" " + v->getShortName()) : "");
+        std::string shortname = (v->has_short() ? (" " + v->getShortName()) : "");
         std::cout << "\t[" << shortname << " " << v->getName() << " ]: " << v->getDescription() << "\n";
       }
       std::cout << "Non-positional arguments:\n";
@@ -232,7 +232,7 @@ namespace arp
           continue;
         if(!printed_args.insert(v).second)
           continue;
-        std::string shortname = (v->have_short() ? (" " + v->getShortName()) : "");
+        std::string shortname = (v->has_short() ? (" " + v->getShortName()) : "");
         std::cout << "\t[" << shortname << " " << v->getName() << " ]: " << v->getDescription() << "\n";
       }
       std::cout << "\t--help: show this message" << std::endl;
