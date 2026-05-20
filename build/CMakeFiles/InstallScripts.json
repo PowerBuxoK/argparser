@@ -1,7 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"/home/michen/dev/argparser/build/cmake_install.cmake"
-	],
-	"Parallel" : false
-}

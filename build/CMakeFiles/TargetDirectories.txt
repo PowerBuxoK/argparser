@@ -1,3 +1,0 @@
-/home/michen/dev/argparser/build/CMakeFiles/argparser-example.dir
-/home/michen/dev/argparser/build/CMakeFiles/edit_cache.dir
-/home/michen/dev/argparser/build/CMakeFiles/rebuild_cache.dir
