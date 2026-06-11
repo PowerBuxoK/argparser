@@ -31,11 +31,10 @@ to call `arp::Argparser.parse()`.
 ```cpp
 #include "argparser.cpp" // Include argparser
 
-
 int main(int argc, char* argv[])
 {
   arp::Argparser ap(argc, argv); // Initialize the main object
-  // Set the program description
+                                 // Set the program description
   ap.setDesription("Test program buru :3");
   // Add a required positional argument named argname0
   auto arg0 = ap.add<arp::sint>("argname0", "Argument 0", arp::required, arp::pos);
@@ -50,6 +49,13 @@ int main(int argc, char* argv[])
   // These two lines are the same because type is arp::def
   std::cout << arg2->val() << std::endl;
   std::cout << arg2->defined() << std::endl;
+
+  // Print out all positional arguments that were given to the program
+  std::cout << "All positionals:" << std::endl;
+  for(auto& c : ap.getPositionalArgs())
+  {
+    std::cout << c << std::endl;
+  }
   return 0;
 }
 ```

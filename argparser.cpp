@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cstdlib>
 #include <exception>
 #include <iostream>
@@ -213,11 +214,14 @@ namespace arp
         else if(cur_pos_id < m_conf_pos.size())
         {
           // Positional arguments
+          m_defined_positionals.push_back(m_args[i]);
           auto val = m_conf_pos[cur_pos_id++];
           i += val->read(m_args, i);
         }
         else
         {
+          // everything else is kind of a positional
+          m_defined_positionals.push_back(m_args[i]);
           i++;
         }
       }
@@ -237,11 +241,17 @@ namespace arp
       m_is_parsed = true;
     };
 
+    std::vector<std::string>& getPositionalArgs()
+    {
+      return m_defined_positionals;
+    }
+
     friend std::ostream& operator<<(std::ostream& os, const Argparser& li);
 
   private:
     std::unordered_map<std::string, std::shared_ptr<ArgparserArgument>> m_conf;
     std::vector<std::shared_ptr<ArgparserArgument>> m_conf_pos;
+    std::vector<std::string> m_defined_positionals;
     std::string m_desc;
 
     std::vector<std::string> m_args;

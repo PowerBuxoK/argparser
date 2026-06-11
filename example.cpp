@@ -18,5 +18,12 @@ int main(int argc, char* argv[])
   // These two lines are the same because type is arp::def
   std::cout << arg2->val() << std::endl;
   std::cout << arg2->defined() << std::endl;
+
+  // Print out all positional arguments that were given to the program
+  std::cout << "All positionals:" << std::endl;
+  for(auto& c : ap.getPositionalArgs())
+  {
+    std::cout << c << std::endl;
+  }
   return 0;
 }
